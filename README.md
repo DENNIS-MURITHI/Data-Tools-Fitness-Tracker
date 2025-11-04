@@ -1,94 +1,85 @@
-# 🧠 Data Fundamentals – Admin Roles & Security in Supabase
+# 🧠 Data Fundamentals Project: Admin Roles & Security in Supabase
 
 <div align="center">
-  <img width="180" height="180" alt="Fitness Tracker Logo" src="https://github.com/user-attachments/assets/20661293-a214-4004-9042-657102fb0710" />
+  <img width="200" height="200" alt="Supabase Logo" src="https://github.com/user-attachments/assets/20661293-a214-4004-9042-657102fb0710" />
   <br/>
-  <h2><b>Fitness Tracker: Admin Roles & Security Setup</b></h2>
+  <h2><b>Data Fundamentals – Admin Roles & Security Implementation</b></h2>
 </div>
 
 ---
 
-## 📗 Table of Contents
+## 📖 Overview
 
-* [📖 About the Project](#about-project)
-* [🛠 Built With](#built-with)
-* [⚙️ Roles & Security Policies](#roles)
-* [🚀 Setup Instructions](#setup)
-* [🔒 Example SQL Policies](#sql-policies)
-* [🧩 Admin Function](#admin-function)
-* [📊 ERD Reference](#erd)
-* [👥 Author](#author)
-* [📄 License](#license)
+This project is part of the **Data Tools** unit, designed to help learners implement secure role-based access control using **Supabase (PostgreSQL)**.
 
----
-
-## 📖 About the Project <a name="about-project"></a>
-
-The **Fitness Tracker – Admin Roles & Security in Supabase** project demonstrates how to apply **Row Level Security (RLS)**, manage **Admin vs User roles**, and enforce the **Principle of Least Privilege** in a PostgreSQL (Supabase) database.  
-It builds on the base *Fitness Tracker Database* project by integrating real-world access control and secure SQL policies.
+The main objectives are to:
+- Define and manage **Admin** and **User** roles  
+- Apply **Row Level Security (RLS)** and SQL **Policies**
+- Enforce the **Principle of Least Privilege**
+- Secure database functions with **role-based permissions**
+- Document and deploy through **GitHub**
 
 ---
 
-## 🛠 Built With <a name="built-with"></a>
+## 🏗 Project Scheme
 
-- **Supabase (PostgreSQL)** — database hosting and authentication  
-- **SQL Policies** — for row-level access control  
-- **Supabase Auth** — for managing users and sessions  
-
----
-
-## ⚙️ Roles & Security Policies <a name="roles"></a>
-
-| Role | Permissions | Description |
-|------|--------------|-------------|
-| **Admin** | Full Access | Can read, insert, update, and delete any record. |
-| **User** | Limited Access | Can read and insert only their own data. |
-
-Row Level Security (RLS) is **enabled on all tables**, and Supabase authentication ensures that every request is made by a verified, logged-in user.
+| Component | Description |
+|------------|-------------|
+| **Database** | Supabase PostgreSQL with at least 3 tables and 5 rows each (from Data Tools final project) |
+| **Roles** | Admin and Regular User |
+| **Security** | Row Level Security (RLS) enabled on all tables |
+| **Policies** | SQL policies for read, insert, update, and delete based on role |
+| **Documentation** | README.md + security_notes.md |
+| **Submission** | GitHub Pull Request to lecturer’s repository |
 
 ---
 
-## 🚀 Setup Instructions <a name="setup"></a>
+## ⚙️ Database Setup
 
-1. **Open Supabase Project**  
-   Use your existing *Fitness Tracker* database or create a new Supabase project.
-
-2. **Enable RLS**  
-   Navigate to:  
-   **Table Editor → Security → Enable RLS** for each table.
-
-3. **Define Roles**  
-   Add a `role` column in the `users` table to distinguish between `'admin'` and `'user'`.
-
-4. **Apply SQL Policies**  
-   Paste the SQL examples below into the Supabase SQL Editor.
-
-5. **Test Access**  
-   Test CRUD actions as both a user and an admin using Supabase authentication.
-
----
-
-## 🔒 Example SQL Policies <a name="sql-policies"></a>
-
-### 1. Users can view and manage only their own data
+1. Use your **existing Supabase project** from the Data Tools Final Project.  
+2. Enable **Row Level Security (RLS)** for all tables.
 
 ```sql
-CREATE POLICY "Users can view their own records"
-ON workouts
-FOR SELECT
-USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can insert their own workouts"
-ON workouts
-FOR INSERT
-WITH CHECK (auth.uid() = user_id);
+ALTER TABLE users ENABLE ROW LEVEL SECURITY;
+ALTER TABLE workouts ENABLE ROW LEVEL SECURITY;
+ALTER TABLE progress_logs ENABLE ROW LEVEL SECURITY;
 ```
 
-### 2. Admins can access everything
+3. Confirm RLS is active in the Supabase dashboard under **Table Editor → Security**.
+
+---
+
+## 👥 Roles Definition
+
+Add a `role` column to the `users` table to distinguish between admin and standard users.
 
 ```sql
-CREATE POLICY "Admins have full access"
-ON workouts
+ALTER TABLE users ADD COLUMN role TEXT CHECK (role IN ('admin', 'user')) DEFAULT 'user';
+```
+
+| Role | Permissions |
+|------|--------------|
+| **Admin** | Full access (read, insert, update, delete) |
+| **User** | Restricted access (read and insert only their own data) |
+
+---
+
+## 🔒 Example Policies
+
+**Users can view only their own tasks:**
+
+```sql
+CREATE POLICY "Users can view their own tasks"
+ON tasks
+FOR SELECT
+USING (auth.uid() = user_id);
+```
+
+**Admins have full access to all tasks:**
+
+```sql
+CREATE POLICY "Admins have full access to tasks"
+ON tasks
 FOR ALL
 USING (
   EXISTS (
@@ -98,47 +89,72 @@ USING (
 );
 ```
 
-### 3. Enable RLS on all tables
-
-```sql
-ALTER TABLE users ENABLE ROW LEVEL SECURITY;
-ALTER TABLE workouts ENABLE ROW LEVEL SECURITY;
-ALTER TABLE progress_logs ENABLE ROW LEVEL SECURITY;
-```
+These policies enforce that regular users can only see their own data, while admins can manage everything.
 
 ---
 
-## 🧩 Admin Function <a name="admin-function"></a>
+## 🔐 Authentication Setup
 
-Admins have access to a special SQL function that allows secure deletion of workout records.
+Enable user authentication with **Supabase Auth** (Email/Password or Magic Link).
+
+**Steps:**
+1. In the Supabase dashboard, navigate to **Authentication → Providers**.  
+2. Enable **Email** or **Magic Link** authentication.  
+3. Ensure only **authenticated users** can access database resources.
+
+---
+
+## ⚡ Custom Admin Function
+
+Create a SQL function that can only be executed by an admin:
 
 ```sql
-CREATE OR REPLACE FUNCTION delete_workout_by_admin(workout_id INT)
+CREATE OR REPLACE FUNCTION delete_project(project_id UUID)
 RETURNS VOID
 LANGUAGE SQL
 SECURITY DEFINER
 AS $$
-  DELETE FROM workouts WHERE id = workout_id;
+  DELETE FROM projects WHERE id = project_id;
 $$;
 ```
 
-The **`SECURITY DEFINER`** clause ensures that the function runs with admin privileges only.
+> The `SECURITY DEFINER` clause ensures that the function runs with the privileges of its creator (admin only).
 
 ---
 
-## 📊 ERD Reference <a name="erd"></a>
+## 🧩 Example ERD Reference
 
 ![ERD Diagram](https://github.com/user-attachments/assets/ee605b4d-0928-4287-a5af-c7da767cfddd)
 
-**Entities Overview:**
-
-- **users** → stores user profiles and roles  
-- **workouts** → logs user workout sessions  
-- **progress_logs** → tracks progress over time  
+**Entities Overview**
+- **users** → stores user information and role  
+- **workouts** → logs activities per user  
+- **progress_logs** → tracks user performance or body metrics  
 
 ---
 
-## 👥 Author <a name="author"></a>
+## 🧠 Example Policy Recap
+
+| Table | Policy | Access |
+|--------|--------|--------|
+| `users` | Authenticated users can only see their record | `auth.uid() = id` |
+| `workouts` | Admins can view all, users only their own | `role = 'admin' OR auth.uid() = user_id` |
+| `progress_logs` | Restricted to user who owns the data | `auth.uid() = user_id` |
+
+---
+
+## ✅ Deliverables
+
+- Supabase project with 3+ tables and populated data  
+- Admin and User roles implemented  
+- RLS and SQL policies applied  
+- At least one custom admin-only function  
+- Proper documentation (`README.md` + `security_notes.md`)  
+- GitHub repository with Pull Request submission  
+
+---
+
+## 👥 Author
 
 **👤 Velma**  
 *Data Fundamentals – Admin Roles & Security in Supabase*  
@@ -146,9 +162,9 @@ GitHub: [@velma](https://github.com/velma)
 
 ---
 
-## 📄 License <a name="license"></a>
+## 📄 License
 
 This project is licensed under the **MIT License**.  
-You are free to use, modify, and distribute it for educational or personal purposes.
+You are free to use, modify, and share for learning or research purposes.
 
 ---
