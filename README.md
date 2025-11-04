@@ -125,6 +125,7 @@ Execute example queries to explore user performance analytics.
   <summary>Click to expand the full schema.sql</summary>
 
 ```sql
+
 -- USERS TABLE
 CREATE TABLE users (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -154,55 +155,72 @@ CREATE TABLE progress_logs (
     recorded_date DATE DEFAULT CURRENT_DATE
 );
 
+-- ===============================
 -- SAMPLE DATA INSERTION
-INSERT INTO users (full_name, email, age, gender) VALUES
-('John Doe', 'john@example.com', 28, 'Male'),
-('Jane Smith', 'jane@example.com', 31, 'Female'),
-('Ali Hassan', 'ali@example.com', 24, 'Male'),
-('Grace Wambui', 'grace@example.com', 29, 'Female'),
-('David Kim', 'david@example.com', 34, 'Male');
+-- ===============================
 
+INSERT INTO users (full_name, email, age, gender) VALUES
+('Brian Otieno', 'brian.otieno@example.com', 26, 'Male'),
+('Faith Njeri', 'faith.njeri@example.com', 30, 'Female'),
+('Dennis Kiptoo', 'dennis.kiptoo@example.com', 24, 'Male'),
+('Velma Wanjiku', 'velma.wanjiku@example.com', 27, 'Female'),
+('George Mwangi', 'george.mwangi@example.com', 32, 'Male');
+
+--  FIXED: Cast workout_date as DATE to prevent type error
 INSERT INTO workouts (user_id, workout_type, duration_minutes, calories_burned, workout_date)
-SELECT id, workout_type, duration, calories, workout_date
+SELECT u.id, temp.workout_type, temp.duration, temp.calories, temp.workout_date::date
 FROM (VALUES
-('John Doe', 'Cardio', 45, 300, '2025-11-01'),
-('Jane Smith', 'Yoga', 60, 250, '2025-11-02'),
-('Ali Hassan', 'Strength', 50, 400, '2025-11-03'),
-('Grace Wambui', 'HIIT', 30, 350, '2025-11-04'),
-('David Kim', 'Cycling', 40, 320, '2025-11-05')
+('Brian Otieno', 'Cardio', 50, 320, '2025-11-01'),
+('Faith Njeri', 'Yoga', 60, 280, '2025-11-02'),
+('Dennis Kiptoo', 'Strength', 45, 390, '2025-11-03'),
+('Velma Wanjiku', 'HIIT', 35, 360, '2025-11-04'),
+('George Mwangi', 'Cycling', 40, 330, '2025-11-05')
 ) AS temp(name, workout_type, duration, calories, workout_date)
 JOIN users u ON u.full_name = temp.name;
 
+--  FIXED: Cast recorded_date as DATE to prevent type error
 INSERT INTO progress_logs (user_id, weight_kg, body_fat_percentage, recorded_date)
-SELECT id, weight, fat, recorded_date
+SELECT u.id, temp.weight, temp.fat, temp.recorded_date::date
 FROM (VALUES
-('John Doe', 75.2, 18.5, '2025-11-01'),
-('Jane Smith', 62.3, 21.1, '2025-11-02'),
-('Ali Hassan', 70.8, 20.0, '2025-11-03'),
-('Grace Wambui', 58.6, 19.5, '2025-11-04'),
-('David Kim', 80.4, 22.0, '2025-11-05')
+('Brian Otieno', 78.5, 17.9, '2025-11-01'),
+('Faith Njeri', 63.2, 21.4, '2025-11-02'),
+('Dennis Kiptoo', 72.6, 19.8, '2025-11-03'),
+('Velma Wanjiku', 59.0, 20.3, '2025-11-04'),
+('George Mwangi', 81.7, 22.5, '2025-11-05')
 ) AS temp(name, weight, fat, recorded_date)
 JOIN users u ON u.full_name = temp.name;
 
+-- ===============================
 -- ANALYTICAL EXAMPLE QUERIES
+-- ===============================
 
--- 1. User progress summary
-SELECT u.full_name, p.weight_kg, p.body_fat_percentage, p.recorded_date
+-- 1️ User Progress Summary
+SELECT 
+    u.full_name, 
+    p.weight_kg, 
+    p.body_fat_percentage, 
+    p.recorded_date
 FROM users u
 JOIN progress_logs p ON u.id = p.user_id
 ORDER BY p.recorded_date DESC;
 
--- 2. Total calories burned by each user
-SELECT u.full_name, SUM(w.calories_burned) AS total_calories
+-- 2️ Total Calories Burned by Each User
+SELECT 
+    u.full_name, 
+    SUM(w.calories_burned) AS total_calories
 FROM users u
 JOIN workouts w ON u.id = w.user_id
 GROUP BY u.full_name
 ORDER BY total_calories DESC;
 
--- 3. Average workout duration by type
-SELECT workout_type, ROUND(AVG(duration_minutes), 2) AS avg_duration
+-- 3️ Average Workout Duration by Type
+SELECT 
+    workout_type, 
+    ROUND(AVG(duration_minutes), 2) AS avg_duration
 FROM workouts
-GROUP BY workout_type;
+GROUP BY workout_type
+ORDER BY avg_duration DESC;
+
 ```
 </details>
 
