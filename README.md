@@ -126,17 +126,20 @@ Copy code
 \i schema.sql
 Connect from RStudio Cloud:
 
-r
-Copy code
+```r
+
 source("connect_db.R")
 con <- connect_db()
 df <- dbGetQuery(con, "SELECT * FROM users;")
 head(df)
+```
 Connecting from Posit to Supabase <a name="posit-supabase-connection"></a>
-r
-Copy code
-install.packages(c("DBI", "RPostgres", "dplyr", "ggplot2"))
 
+```r
+
+install.packages(c("DBI", "RPostgres", "dplyr", "ggplot2"))
+```
+```r
 library(DBI)
 
 connect_db <- function() {
@@ -153,10 +156,14 @@ connect_db <- function() {
 
 con <- connect_db()
 dbListTables(con)
-💾 Schema SQL <a name="schema-sql"></a>
-<details> <summary>Click to expand full schema.sql</summary>
-sql
-Copy code
+```
+
+## 💾 Schema SQL <a name="schema-sql"></a>
+
+<details>
+<summary>Click to expand full schema.sql</summary>
+
+```sql
 -- USERS TABLE
 CREATE TABLE users (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -197,100 +204,67 @@ INSERT INTO users (full_name, email, age, gender) VALUES
 INSERT INTO workouts (user_id, workout_type, duration_minutes, calories_burned, workout_date)
 SELECT u.id, temp.workout_type, temp.duration, temp.calories, temp.workout_date::date
 FROM (VALUES
-('Brian Otieno', 'Cardio', 50, 320, '2025-11-01'),
-('Faith Njeri', 'Yoga', 60, 280, '2025-11-02'),
-('Dennis Kiptoo', 'Strength', 45, 390, '2025-11-03'),
-('Velma Wanjiku', 'HIIT', 35, 360, '2025-11-04'),
-('George Mwangi', 'Cycling', 40, 330, '2025-11-05')
+    ('Brian Otieno', 'Cardio', 50, 320, '2025-11-01'),
+    ('Faith Njeri', 'Yoga', 60, 280, '2025-11-02'),
+    ('Dennis Kiptoo', 'Strength', 45, 390, '2025-11-03'),
+    ('Velma Wanjiku', 'HIIT', 35, 360, '2025-11-04'),
+    ('George Mwangi', 'Cycling', 40, 330, '2025-11-05')
 ) AS temp(name, workout_type, duration, calories, workout_date)
 JOIN users u ON u.full_name = temp.name;
 
 INSERT INTO progress_logs (user_id, weight_kg, body_fat_percentage, recorded_date)
 SELECT u.id, temp.weight, temp.fat, temp.recorded_date::date
 FROM (VALUES
-('Brian Otieno', 78.5, 17.9, '2025-11-01'),
-('Faith Njeri', 63.2, 21.4, '2025-11-02'),
-('Dennis Kiptoo', 72.6, 19.8, '2025-11-03'),
-('Velma Wanjiku', 59.0, 20.3, '2025-11-04'),
-('George Mwangi', 81.7, 22.5, '2025-11-05')
+    ('Brian Otieno', 78.5, 17.9, '2025-11-01'),
+    ('Faith Njeri', 63.2, 21.4, '2025-11-02'),
+    ('Dennis Kiptoo', 72.6, 19.8, '2025-11-03'),
+    ('Velma Wanjiku', 59.0, 20.3, '2025-11-04'),
+    ('George Mwangi', 81.7, 22.5, '2025-11-05')
 ) AS temp(name, weight, fat, recorded_date)
 JOIN users u ON u.full_name = temp.name;
-</details>
-📊 R Data Analysis <a name="r-data-analysis"></a>
-<details> <summary>Click to expand full R analysis code</summary>
-r
-Copy code
-source("connect_db.R")
-library(DBI)
-library(dplyr)
-library(ggplot2)
 
-con <- connect_db()
 
-# 1. User Progress Summary
-progress <- dbGetQuery(con, "
-  SELECT u.full_name, p.weight_kg, p.body_fat_percentage, p.recorded_date
-  FROM users u
-  JOIN progress_logs p ON u.id = p.user_id
-  ORDER BY p.recorded_date DESC;
-")
-head(progress)
+---
 
-# 2. Total Calories Burned per User
-calories <- dbGetQuery(con, "
-  SELECT u.full_name, SUM(w.calories_burned) AS total_calories
-  FROM users u
-  JOIN workouts w ON u.id = w.user_id
-  GROUP BY u.full_name
-  ORDER BY total_calories DESC;
-")
-
-ggplot(calories, aes(x=reorder(full_name, total_calories), y=total_calories, fill=full_name)) +
-  geom_col(show.legend=FALSE) +
-  coord_flip() +
-  theme_minimal() +
-  labs(title="Total Calories Burned per User", x="User", y="Calories Burned")
-</details>
-📖 Data Dictionary <a name="data-dictionary"></a>
-Full Data Dictionary: data_dictionary.md
-
-👥 Authors <a name="authors"></a>
+##👥 Authors <a name="authors"></a>
 Dennis Murithi
 GitHub: @dennismurithi
 LinkedIn: LinkedIn
+---
 
 🔭 Future Features <a name="future-features"></a>
-Add analytics for progress trends
+- Add analytics for progress trends
 
-Connect to Power BI dashboards
+- Connect to Power BI dashboards
 
-Include more workout types and user goals
+- Include more workout types and user goals
 
-🤝 Contributing <a name="contributing"></a>
+## 🤝 Contributing <a name="contributing"></a>
 Contributions are welcome. Fork the repo, create a branch, and submit a pull request.
 
-⭐️ Show your support <a name="support"></a>
+## ⭐️ Show your support <a name="support"></a>
 If you like this project, give it a ⭐️ on GitHub!
 
-🙏 Acknowledgements <a name="acknowledgements"></a>
+## 🙏 Acknowledgements <a name="acknowledgements"></a>
 Supabase – PostgreSQL hosting and testing
 
 Posit – RStudio Cloud environment
 
-❓ FAQ <a name="faq"></a>
+## ❓ FAQ <a name="faq"></a>
 How do I run this project in Posit?
 Open the repository in Posit, install dependencies, and run the R scripts step by step.
 
-What dependencies are needed?
+**What dependencies are needed?**
 
-r
+```r
 Copy code
 install.packages(c("DBI", "RPostgres", "dplyr", "ggplot2"))
-Can I use MySQL or other databases?
+```
+** Can I use MySQL or other databases? **
 ❌ No. Only Supabase (PostgreSQL) is supported.
 
 How do I connect Posit to Supabase?
 Use connect_db.R with your Supabase credentials from Project Settings → Database → Connection Info.
 
-📝 License <a name="license"></a>
+## 📝 License <a name="license"></a>
 This project is licensed under the MIT License
