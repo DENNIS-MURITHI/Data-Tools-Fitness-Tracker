@@ -178,10 +178,6 @@ $$;
 
 ---
 
-## 🧩 Example ERD Reference
-
-![ERD Diagram](https://github.com/user-attachments/assets/ee605b4d-0928-4287-a5af-c7da767cfddd)
-
 **Entities Overview**
 - **users** → stores user information and role  
 - **workouts** → logs activities per user  
