@@ -165,9 +165,8 @@ dbListTables(con)
 
 ## 💾 Schema SQL <a name="schema-sql"></a>
 
-<details>
 <summary>Click to expand full schema.sql</summary>
-
+<details>
 ```sql
 -- USERS TABLE
 CREATE TABLE users (
@@ -227,11 +226,11 @@ FROM (VALUES
     ('George Mwangi', 81.7, 22.5, '2025-11-05')
 ) AS temp(name, weight, fat, recorded_date)
 JOIN users u ON u.full_name = temp.name;
-```
-
 ---
+
 ## 📊 R Data Analysis <a name="r-data-analysis"></a>
-<details> <summary>Click to expand full R analysis code</summary>
+<summary>Click to expand full R analysis code</summary>
+<details> 
 ```r 
 source("connect_db.R")
 library(DBI)
