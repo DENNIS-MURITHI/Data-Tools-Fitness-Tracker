@@ -320,9 +320,9 @@ ggplot(latest_progress, aes(x = reorder(full_name, weight_kg), y = weight_kg, fi
 <img width="1366" height="634" alt="image" src="https://github.com/user-attachments/assets/02122938-5bff-491e-83c7-8405d7f706c9" />
 
 ## 👥 Authors <a name="authors"></a>
-**Dennis Murithi**  
-GitHub: [@dennismurithi](https://github.com/dennismurithi)  
-LinkedIn: [LinkedIn Profile](https://www.linkedin.com/in/dennis-muthuri/)
+**Velma**  
+GitHub: [@velma](https://github.com/)  
+LinkedIn: [LinkedIn Profile](https://www.linkedin.com/in/)
 
 ---
 
