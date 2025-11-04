@@ -116,18 +116,18 @@ Clone the repository:
 ```bash
 git clone https://github.com/YOUR_USERNAME/data-analysis-project.git
 cd data-analysis-project
-Usage
-Open Supabase and create a new project
+```
+##Usage
+- Open Supabase and create a new project
+- Execute the schema file:
 
-Execute the schema file:
+```sql
 
-sql
-Copy code
 \i schema.sql
 Connect from RStudio Cloud:
+```
 
 ```r
-
 source("connect_db.R")
 con <- connect_db()
 df <- dbGetQuery(con, "SELECT * FROM users;")
@@ -315,8 +315,7 @@ ggplot(latest_progress, aes(x = reorder(full_name, weight_kg), y = weight_kg, fi
   )
 ```
 
-
-
+<img width="1366" height="634" alt="image" src="https://github.com/user-attachments/assets/02122938-5bff-491e-83c7-8405d7f706c9" />
 
 ## 👥 Authors <a name="authors"></a>
 **Dennis Murithi**  
