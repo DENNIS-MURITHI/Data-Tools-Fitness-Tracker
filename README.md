@@ -111,39 +111,20 @@ These policies enforce that regular users can only see their own data, while adm
 ## Test queries for roles
 
 ```sql
--- 1️⃣ Setup: create sample projects
-INSERT INTO projects (id, name, owner_id) VALUES
-(gen_random_uuid(), 'Project Alpha', auth.uid()),
-(gen_random_uuid(), 'Project Beta', auth.uid());
-
--- 2️⃣ Verify projects exist
-SELECT * FROM projects;
-
--- 3️⃣ Attempt deletion as a regular user
--- Assume auth.uid() is a non-admin user
-SELECT delete_project(project_id)
-FROM projects
-WHERE name = 'Project Alpha';
-
--- Check if the project was deleted
-SELECT * FROM projects;
--- ❌ Project Alpha should still exist for non-admin
-
--- 4️⃣ Attempt deletion as an admin
--- Simulate login as an admin (auth.uid() must be an admin)
-SELECT delete_project(project_id)
-FROM projects
-WHERE name = 'Project Alpha';
-
--- Verify deletion
-SELECT * FROM projects;
--- ✅ Project Alpha should now be deleted
-
--- 5️⃣ Optional: Check audit logging (if implemented)
-SELECT * FROM admin_audit_log
-ORDER BY executed_at DESC;
-
+SELECT * FROM workouts;
 ```
+<img width="1366" height="578" alt="image" src="https://github.com/user-attachments/assets/b34e0f7b-0858-4333-a4b5-5d4340391133" />
+
+## Admin can insert users
+```sql
+
+INSERT INTO workouts (user_id, workout_type, duration_minutes, calories_burned)
+VALUES ('<auth.uid()>', 'Yoga', 60, 250);
+```
+** Successful insertions by admin **
+<img width="1366" height="549" alt="image" src="https://github.com/user-attachments/assets/22767d72-67d4-495d-88df-311125adb08b" />
+** Output after insertion **
+<img width="1366" height="580" alt="image" src="https://github.com/user-attachments/assets/91081be9-9d73-4a67-a47b-3bbbfe81dd8b" />
 
 ---
 
