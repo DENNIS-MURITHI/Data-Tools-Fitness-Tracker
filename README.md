@@ -1,10 +1,9 @@
-🏋️‍♂️ README.md
-# Data-Tools
+# Data-Analysis
 
 <div align="center">
-  <img width="200" height="200" alt="Fitness Tracker Logo" src="https://github.com/user-attachments/assets/20661293-a214-4004-9042-657102fb0710" />
+  <img width="200" height="200" alt="Data Analysis Logo" src="https://github.com/user-attachments/assets/20661293-a214-4004-9042-657102fb0710" />
   <br/>
-  <h2><b>Fitness Tracker Database Project</b></h2>
+  <h2><b>Data Analysis Project with RStudio Cloud & Supabase</b></h2>
 </div>
 
 # 📗 Table of Contents
@@ -17,8 +16,9 @@
   * [Prerequisites](#prerequisites)
   * [Setup](#setup)
   * [Usage](#usage)
-* [📊 ERD Diagram](#erd-diagram)
+  * [Connecting from Posit to Supabase](#posit-supabase-connection)
 * [💾 Schema SQL](#schema-sql)
+* [📊 R Data Analysis](#r-data-analysis)
 * [📖 Data Dictionary](#data-dictionary)
 * [👥 Authors](#authors)
 * [🔭 Future Features](#future-features)
@@ -32,26 +32,51 @@
 
 # 📖 About the Project <a name="about-project"></a>
 
-> The **Fitness Tracker Database** models how a health and fitness app stores user data, workout sessions, and progress logs.  
-> It demonstrates database normalization, relationships, and analytical query design using PostgreSQL on **Supabase**.
+> This project is a 4-week independent data analysis exercise where students work on a unique dataset using **RStudio Cloud (Posit)** and **Supabase (PostgreSQL)**.  
+> The goal is to practice database querying, data manipulation, exploratory data analysis (EDA), and visualization using `ggplot2`.
+
+### Detailed Overview
+
+1. **Database Setup**  
+   Students reuse their **Data Tools project database** with 3+ tables, each having at least 5 rows. Relationships are enforced using foreign keys.
+
+2. **Data Insertion**  
+   Sample data is added to simulate real-world scenarios.
+
+3. **R Analysis**  
+   Use RStudio Cloud to connect to Supabase, query the database, and manipulate data with `dplyr`.
+
+4. **Visualization**  
+   Generate meaningful visual insights using `ggplot2` (bar charts, pie charts, histograms).
+
+5. **Documentation**  
+   Maintain reproducibility using `README.md`, `data_dictionary.md`, and R scripts.
+
+### Key Objectives
+
+* Connect R to Supabase/Postgres  
+* Perform **EDA** with R  
+* Create visual insights using `ggplot2`  
+* Document database schema, queries, and analysis process  
 
 ---
 
 ## 🛠 Built With <a name="built-with"></a>
 
-### Tech Stack <a name="tech-stack"></a>
+### Tech Stack
 
 <details>
   <summary>Database & Hosting</summary>
   <ul>
-    <li><a href="https://supabase.com">Supabase (PostgreSQL)</a> – used to design schema, insert data, and run SQL queries</li>
+    <li><a href="https://supabase.com">Supabase (PostgreSQL)</a> – backend database for tables, relationships, and sample data.</li>
   </ul>
 </details>
 
 <details>
-  <summary>SQL Queries</summary>
+  <summary>R Data Analysis</summary>
   <ul>
-    <li>Database schema creation, sample data, and analytical queries</li>
+    <li><a href="https://posit.cloud/">Posit / RStudio Cloud</a> – online IDE for connecting to Supabase, performing queries, and generating visualizations.</li>
+    <li>R Packages: <code>DBI</code>, <code>RPostgres</code>, <code>dplyr</code>, <code>ggplot2</code></li>
   </ul>
 </details>
 
@@ -59,26 +84,28 @@
 
 ### Key Features <a name="key-features"></a>
 
-* Tracks users, their workouts, and their physical progress.
-* Demonstrates **one-to-many** relationships between users and workouts.
-* Enables analytics like total calories burned and average workout durations.
-* Includes complete schema and documentation for easy setup.
+* Relational database with **users, workouts, progress_logs** tables  
+* Clear **foreign key relationships**  
+* **R-based analysis**: grouping, summarizing, filtering, and visualization  
+* Visual insights using **bar charts, pie charts, histograms**  
 
 ---
 
 ## 🚀 Live Demo <a name="live-demo"></a>
 
-> This project is backend-only (database). You can view or interact with it via Supabase.
+> Backend-only demo. Run SQL queries directly in Supabase.
 
-* [Supabase Project Link (Demo)](https://supabase.com/dashboard/project/fitness-tracker-demo/sql)
+* [Supabase Project Link](https://supabase.com/dashboard/project)
 
 ---
 
 # 💻 Getting Started <a name="getting-started"></a>
 
 ### Prerequisites
+
 * Supabase account  
-* SQL client (Supabase SQL editor)
+* Posit / RStudio Cloud  
+* R packages: `DBI`, `RPostgres`, `dplyr`, `ggplot2`  
 
 ---
 
@@ -87,45 +114,49 @@
 Clone the repository:
 
 ```bash
-git clone https://github.com/DENNIS-MURITHI/fitness-tracker-database.git
-cd fitness-tracker-database
-```
+git clone https://github.com/YOUR_USERNAME/data-analysis-project.git
+cd data-analysis-project
+Usage
+Open Supabase and create a new project
 
-### Usage
+Execute the schema file:
 
-Open Supabase → create a new project → go to SQL Editor.
-
-Run the schema.sql file:
-
-```sql
+sql
+Copy code
 \i schema.sql
-```
+Connect from RStudio Cloud:
 
-Execute example queries to explore user performance analytics.
+r
+Copy code
+source("connect_db.R")
+con <- connect_db()
+df <- dbGetQuery(con, "SELECT * FROM users;")
+head(df)
+Connecting from Posit to Supabase <a name="posit-supabase-connection"></a>
+r
+Copy code
+install.packages(c("DBI", "RPostgres", "dplyr", "ggplot2"))
 
----
+library(DBI)
 
-📊 ERD Diagram <a name="erd-diagram"></a>
+connect_db <- function() {
+  dbConnect(
+    RPostgres::Postgres(),
+    dbname = "postgres",
+    host = "your_project.supabase.co",
+    port = 5432,
+    user = "postgres",
+    password = "your_password",
+    sslmode = "require"
+  )
+}
 
-<div align="center">
-  <img width="1366" height="577" alt="image" src="https://github.com/user-attachments/assets/a5878c9e-4764-40cc-b877-8d622a52ae68" />
-</div>
-
-**Entity Descriptions:**
-
-- **Users** → base entity containing profile info.  
-- **Workouts** → stores individual workout sessions.  
-- **Progress Logs** → tracks body metrics and user changes.
-
----
-
+con <- connect_db()
+dbListTables(con)
 💾 Schema SQL <a name="schema-sql"></a>
-
-<details>
-  <summary>Click to expand the full schema.sql</summary>
-
-```sql
-
+<details> <summary>Click to expand full schema.sql</summary>
+sql
+Copy code
 -- USERS TABLE
 CREATE TABLE users (
     id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
@@ -155,10 +186,7 @@ CREATE TABLE progress_logs (
     recorded_date DATE DEFAULT CURRENT_DATE
 );
 
--- ===============================
--- SAMPLE DATA INSERTION
--- ===============================
-
+-- SAMPLE DATA
 INSERT INTO users (full_name, email, age, gender) VALUES
 ('Brian Otieno', 'brian.otieno@example.com', 26, 'Male'),
 ('Faith Njeri', 'faith.njeri@example.com', 30, 'Female'),
@@ -166,7 +194,6 @@ INSERT INTO users (full_name, email, age, gender) VALUES
 ('Velma Wanjiku', 'velma.wanjiku@example.com', 27, 'Female'),
 ('George Mwangi', 'george.mwangi@example.com', 32, 'Male');
 
---  FIXED: Cast workout_date as DATE to prevent type error
 INSERT INTO workouts (user_id, workout_type, duration_minutes, calories_burned, workout_date)
 SELECT u.id, temp.workout_type, temp.duration, temp.calories, temp.workout_date::date
 FROM (VALUES
@@ -178,7 +205,6 @@ FROM (VALUES
 ) AS temp(name, workout_type, duration, calories, workout_date)
 JOIN users u ON u.full_name = temp.name;
 
---  FIXED: Cast recorded_date as DATE to prevent type error
 INSERT INTO progress_logs (user_id, weight_kg, body_fat_percentage, recorded_date)
 SELECT u.id, temp.weight, temp.fat, temp.recorded_date::date
 FROM (VALUES
@@ -189,128 +215,82 @@ FROM (VALUES
 ('George Mwangi', 81.7, 22.5, '2025-11-05')
 ) AS temp(name, weight, fat, recorded_date)
 JOIN users u ON u.full_name = temp.name;
-
--- ===============================
--- ANALYTICAL EXAMPLE QUERIES
--- ===============================
-
--- 1️ User Progress Summary
-SELECT 
-    u.full_name, 
-    p.weight_kg, 
-    p.body_fat_percentage, 
-    p.recorded_date
-FROM users u
-JOIN progress_logs p ON u.id = p.user_id
-ORDER BY p.recorded_date DESC;
-
--- 2️ Total Calories Burned by Each User
-SELECT 
-    u.full_name, 
-    SUM(w.calories_burned) AS total_calories
-FROM users u
-JOIN workouts w ON u.id = w.user_id
-GROUP BY u.full_name
-ORDER BY total_calories DESC;
-
--- 3️ Average Workout Duration by Type
-SELECT 
-    workout_type, 
-    ROUND(AVG(duration_minutes), 2) AS avg_duration
-FROM workouts
-GROUP BY workout_type
-ORDER BY avg_duration DESC;
-
-```
 </details>
+📊 R Data Analysis <a name="r-data-analysis"></a>
+<details> <summary>Click to expand full R analysis code</summary>
+r
+Copy code
+source("connect_db.R")
+library(DBI)
+library(dplyr)
+library(ggplot2)
 
----
-## Output of the queries
+con <- connect_db()
 
-** User Progress Summary **
+# 1. User Progress Summary
+progress <- dbGetQuery(con, "
+  SELECT u.full_name, p.weight_kg, p.body_fat_percentage, p.recorded_date
+  FROM users u
+  JOIN progress_logs p ON u.id = p.user_id
+  ORDER BY p.recorded_date DESC;
+")
+head(progress)
 
-```sql
-SELECT 
-    u.full_name, 
-    p.weight_kg, 
-    p.body_fat_percentage, 
-    p.recorded_date
-FROM users u
-JOIN progress_logs p ON u.id = p.user_id
-ORDER BY p.recorded_date DESC;
-```
-<img width="1366" height="683" alt="image" src="https://github.com/user-attachments/assets/61d492e5-9c91-4ecd-b08c-4ba13c0292bb" />
+# 2. Total Calories Burned per User
+calories <- dbGetQuery(con, "
+  SELECT u.full_name, SUM(w.calories_burned) AS total_calories
+  FROM users u
+  JOIN workouts w ON u.id = w.user_id
+  GROUP BY u.full_name
+  ORDER BY total_calories DESC;
+")
 
- ** Total Calories Burned by Each User **
-```sql
-
-SELECT 
-    u.full_name, 
-    SUM(w.calories_burned) AS total_calories
-FROM users u
-JOIN workouts w ON u.id = w.user_id
-GROUP BY u.full_name
-ORDER BY total_calories DESC;
-```
-
-<img width="1366" height="636" alt="image" src="https://github.com/user-attachments/assets/b2ae219e-e5ee-479f-8dae-f663f02eb35c" />
-
-
-
+ggplot(calories, aes(x=reorder(full_name, total_calories), y=total_calories, fill=full_name)) +
+  geom_col(show.legend=FALSE) +
+  coord_flip() +
+  theme_minimal() +
+  labs(title="Total Calories Burned per User", x="User", y="Calories Burned")
+</details>
 📖 Data Dictionary <a name="data-dictionary"></a>
-
-📄 View Full File: **data_dictionary.md**
-
----
+Full Data Dictionary: data_dictionary.md
 
 👥 Authors <a name="authors"></a>
-
-👤 **Velma**  
-GitHub: [@Velma](https://github.com/)  
-LinkedIn: [Velma]()
-
----
+Dennis Murithi
+GitHub: @dennismurithi
+LinkedIn: LinkedIn
 
 🔭 Future Features <a name="future-features"></a>
+Add analytics for progress trends
 
-- Add `exercise_types` table for detailed exercise info  
-- Integrate with Power BI dashboard for analytics  
-- Implement leaderboard for total calories burned
+Connect to Power BI dashboards
 
----
+Include more workout types and user goals
 
 🤝 Contributing <a name="contributing"></a>
-
-Contributions and feedback are welcome!  
-Feel free to fork the repo, make improvements, and submit a PR.
-
----
+Contributions are welcome. Fork the repo, create a branch, and submit a pull request.
 
 ⭐️ Show your support <a name="support"></a>
-
 If you like this project, give it a ⭐️ on GitHub!
 
----
-
 🙏 Acknowledgements <a name="acknowledgements"></a>
+Supabase – PostgreSQL hosting and testing
 
-- [Supabase](https://supabase.com) — for providing a free PostgreSQL platform.  
-
----
+Posit – RStudio Cloud environment
 
 ❓ FAQ <a name="faq"></a>
+How do I run this project in Posit?
+Open the repository in Posit, install dependencies, and run the R scripts step by step.
 
-**How do I connect this to Power BI?**  
-Export data using Supabase API or CSV and load into Power BI.
+What dependencies are needed?
 
-**Can I extend this schema?**  
-Yes, you can add more entities like goals or trainers.
+r
+Copy code
+install.packages(c("DBI", "RPostgres", "dplyr", "ggplot2"))
+Can I use MySQL or other databases?
+❌ No. Only Supabase (PostgreSQL) is supported.
 
-**What if my SQL import fails?**  
-Ensure you run the schema in order: `users` → `workouts` → `progress_logs`.
-
----
+How do I connect Posit to Supabase?
+Use connect_db.R with your Supabase credentials from Project Settings → Database → Connection Info.
 
 📝 License <a name="license"></a>
-
-This project is licensed under the **MIT License** — see the LICENSE file.
+This project is licensed under the MIT License
