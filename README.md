@@ -158,6 +158,11 @@ con <- connect_db()
 dbListTables(con)
 ```
 
+## Successful coneection to supabase project
+
+<img width="1366" height="629" alt="image" src="https://github.com/user-attachments/assets/2f68d7c1-0e4d-4857-8621-d61d6653bfe4" />
+
+
 ## 💾 Schema SQL <a name="schema-sql"></a>
 
 <details>
@@ -259,6 +264,59 @@ ggplot(calories, aes(x=reorder(full_name, total_calories), y=total_calories, fil
   labs(title="Total Calories Burned per User", x="User", y="Calories Burned") ```
   
 ---
+## Output and visualizations in posit
+**  User Progress Summary **
+```r
+progress <- dbGetQuery(con, "
+  SELECT u.full_name, p.weight_kg, p.body_fat_percentage, p.recorded_date
+  FROM users u
+  JOIN progress_logs p ON u.id = p.user_id
+  ORDER BY p.recorded_date DESC;
+")
+head(progress)
+```
+** Visual for weight progress over time **
+```r
+library(ggplot2)
+
+ggplot(progress, aes(x = recorded_date, y = weight_kg, color = full_name, group = full_name)) +
+  geom_line(size = 1) +
+  geom_point(size = 2) +
+  theme_minimal() +
+  labs(
+    title = "📉 Weight Progress Over Time",
+    x = "Date Recorded",
+    y = "Weight (kg)",
+    color = "User"
+  )
+
+```
+<img width="1366" height="638" alt="image" src="https://github.com/user-attachments/assets/00f3ee5a-a702-4b47-8d76-10c7c312dc63" />
+
+** Latest Weight Per user **
+```r
+library(dplyr)
+library(ggplot2)
+
+# Get the most recent record for each user
+latest_progress <- progress %>%
+  group_by(full_name) %>%
+  slice_max(recorded_date, n = 1)
+
+# Bar chart of latest weights
+ggplot(latest_progress, aes(x = reorder(full_name, weight_kg), y = weight_kg, fill = full_name)) +
+  geom_col(show.legend = FALSE) +
+  coord_flip() +
+  theme_minimal() +
+  labs(
+    title = "🏋️ Latest Recorded Weight per User",
+    x = "User",
+    y = "Weight (kg)"
+  )
+```
+
+
+
 
 ## 👥 Authors <a name="authors"></a>
 **Dennis Murithi**  
