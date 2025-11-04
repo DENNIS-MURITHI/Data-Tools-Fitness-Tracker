@@ -108,7 +108,7 @@ Execute example queries to explore user performance analytics.
 📊 ERD Diagram <a name="erd-diagram"></a>
 
 <div align="center">
-  <img width="100%" height="480" alt="Fitness Tracker ERD" src="https://github.com/user-attachments/assets/ee605b4d-0928-4287-a5af-c7da767cfddd" />
+  <img width="1366" height="577" alt="image" src="https://github.com/user-attachments/assets/a5878c9e-4764-40cc-b877-8d622a52ae68" />
 </div>
 
 **Entity Descriptions:**
@@ -225,6 +225,37 @@ ORDER BY avg_duration DESC;
 </details>
 
 ---
+## Output of the queries
+
+** User Progress Summary **
+
+```sql
+SELECT 
+    u.full_name, 
+    p.weight_kg, 
+    p.body_fat_percentage, 
+    p.recorded_date
+FROM users u
+JOIN progress_logs p ON u.id = p.user_id
+ORDER BY p.recorded_date DESC;
+```
+<img width="1366" height="683" alt="image" src="https://github.com/user-attachments/assets/61d492e5-9c91-4ecd-b08c-4ba13c0292bb" />
+
+ ** Total Calories Burned by Each User **
+```sql
+
+SELECT 
+    u.full_name, 
+    SUM(w.calories_burned) AS total_calories
+FROM users u
+JOIN workouts w ON u.id = w.user_id
+GROUP BY u.full_name
+ORDER BY total_calories DESC;
+```
+
+<img width="1366" height="636" alt="image" src="https://github.com/user-attachments/assets/b2ae219e-e5ee-479f-8dae-f663f02eb35c" />
+
+
 
 📖 Data Dictionary <a name="data-dictionary"></a>
 
@@ -234,9 +265,9 @@ ORDER BY avg_duration DESC;
 
 👥 Authors <a name="authors"></a>
 
-👤 **Dennis Murithi**  
-GitHub: [@DENNIS-MURITHI](https://github.com/DENNIS-MURITHI)  
-LinkedIn: [Dennis Murithi](https://www.linkedin.com/in/dennis-murithi)
+👤 **Velma**  
+GitHub: [@Velma](https://github.com/)  
+LinkedIn: [Velma]()
 
 ---
 
@@ -264,8 +295,6 @@ If you like this project, give it a ⭐️ on GitHub!
 🙏 Acknowledgements <a name="acknowledgements"></a>
 
 - [Supabase](https://supabase.com) — for providing a free PostgreSQL platform.  
-- [Draw.io](https://app.diagrams.net) — for ERD visualization.  
-- [OpenAI GPT-5](https://openai.com) — for schema documentation assistance.
 
 ---
 
