@@ -66,20 +66,28 @@ ALTER TABLE users ADD COLUMN role TEXT CHECK (role IN ('admin', 'user')) DEFAULT
 
 ## 🔒 Example Policies
 
-**Users can view only their own tasks:**
+**Users can view only their own workouts:**
 
 ```sql
-CREATE POLICY "Users can view their own tasks"
-ON tasks
+-- Users can view only their own workouts
+CREATE POLICY "Users can view their own workouts"
+ON workouts
 FOR SELECT
 USING (auth.uid() = user_id);
+
+-- Users can insert their own workouts
+CREATE POLICY "Users can insert their own workouts"
+ON workouts
+FOR INSERT
+WITH CHECK (auth.uid() = user_id);
 ```
 
-**Admins have full access to all tasks:**
+**Admins have full access to all workouts:**
 
 ```sql
-CREATE POLICY "Admins have full access to tasks"
-ON tasks
+-- Admins have full access to all workouts
+CREATE POLICY "Admins have full access to workouts"
+ON workouts
 FOR ALL
 USING (
   EXISTS (
@@ -90,6 +98,43 @@ USING (
 ```
 
 These policies enforce that regular users can only see their own data, while admins can manage everything.
+
+## Test queries for roles
+
+```sql
+-- 1️⃣ Setup: create sample projects
+INSERT INTO projects (id, name, owner_id) VALUES
+(gen_random_uuid(), 'Project Alpha', auth.uid()),
+(gen_random_uuid(), 'Project Beta', auth.uid());
+
+-- 2️⃣ Verify projects exist
+SELECT * FROM projects;
+
+-- 3️⃣ Attempt deletion as a regular user
+-- Assume auth.uid() is a non-admin user
+SELECT delete_project(project_id)
+FROM projects
+WHERE name = 'Project Alpha';
+
+-- Check if the project was deleted
+SELECT * FROM projects;
+-- ❌ Project Alpha should still exist for non-admin
+
+-- 4️⃣ Attempt deletion as an admin
+-- Simulate login as an admin (auth.uid() must be an admin)
+SELECT delete_project(project_id)
+FROM projects
+WHERE name = 'Project Alpha';
+
+-- Verify deletion
+SELECT * FROM projects;
+-- ✅ Project Alpha should now be deleted
+
+-- 5️⃣ Optional: Check audit logging (if implemented)
+SELECT * FROM admin_audit_log
+ORDER BY executed_at DESC;
+
+```
 
 ---
 
@@ -109,13 +154,24 @@ Enable user authentication with **Supabase Auth** (Email/Password or Magic Link)
 Create a SQL function that can only be executed by an admin:
 
 ```sql
+-- Ensure the function executes with the privileges of its creator (SECURITY DEFINER)
+-- and can only be called by an admin user.
+
 CREATE OR REPLACE FUNCTION delete_project(project_id UUID)
 RETURNS VOID
 LANGUAGE SQL
 SECURITY DEFINER
 AS $$
-  DELETE FROM projects WHERE id = project_id;
+  -- Only allow deletion if the current user is an admin
+  DELETE FROM projects
+  WHERE id = project_id
+    AND EXISTS (
+      SELECT 1 FROM users
+      WHERE id = auth.uid()
+        AND role = 'admin'
+    );
 $$;
+
 ```
 
 > The `SECURITY DEFINER` clause ensures that the function runs with the privileges of its creator (admin only).
