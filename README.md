@@ -81,7 +81,16 @@ ON workouts
 FOR INSERT
 WITH CHECK (auth.uid() = user_id);
 ```
+## You can alter table to implement roles
 
+```sql
+ALTER TABLE users
+ADD COLUMN role VARCHAR(20) DEFAULT 'user';
+
+INSERT INTO users (full_name, email, age, gender, role) VALUES
+('James Mwangi', 'james.mwangi@example.com', 33, 'Male', 'admin'),
+('Ryan Otieno', 'ryan.otieno@example.com', 24, 'Male', 'user');
+```
 **Admins have full access to all workouts:**
 
 ```sql
