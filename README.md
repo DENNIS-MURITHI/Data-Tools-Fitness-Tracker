@@ -222,49 +222,78 @@ FROM (VALUES
     ('George Mwangi', 81.7, 22.5, '2025-11-05')
 ) AS temp(name, weight, fat, recorded_date)
 JOIN users u ON u.full_name = temp.name;
+```
 
+---
+## 📊 R Data Analysis <a name="r-data-analysis"></a>
+<details> <summary>Click to expand full R analysis code</summary>
+```r 
+source("connect_db.R")
+library(DBI)
+library(dplyr)
+library(ggplot2)
+
+con <- connect_db()
+
+# 1. User Progress Summary
+progress <- dbGetQuery(con, "
+  SELECT u.full_name, p.weight_kg, p.body_fat_percentage, p.recorded_date
+  FROM users u
+  JOIN progress_logs p ON u.id = p.user_id
+  ORDER BY p.recorded_date DESC;
+")
+head(progress)
+
+# 2. Total Calories Burned per User
+calories <- dbGetQuery(con, "
+  SELECT u.full_name, SUM(w.calories_burned) AS total_calories
+  FROM users u
+  JOIN workouts w ON u.id = w.user_id
+  GROUP BY u.full_name
+  ORDER BY total_calories DESC;")
+
+ggplot(calories, aes(x=reorder(full_name, total_calories), y=total_calories, fill=full_name)) +
+  geom_col(show.legend=FALSE) +
+  coord_flip() +
+  theme_minimal() +
+  labs(title="Total Calories Burned per User", x="User", y="Calories Burned") ```
+  
+---
+
+## 👥 Authors <a name="authors"></a>
+**Dennis Murithi**  
+GitHub: [@dennismurithi](https://github.com/dennismurithi)  
+LinkedIn: [LinkedIn Profile](https://www.linkedin.com/in/dennis-muthuri/)
 
 ---
 
-##👥 Authors <a name="authors"></a>
-Dennis Murithi
-GitHub: @dennismurithi
-LinkedIn: LinkedIn
+## 🔭 Future Features <a name="future-features"></a>
+- Add analytics for progress trends  
+- Connect to Power BI dashboards  
+- Include more workout types and user goals  
+
 ---
-
-🔭 Future Features <a name="future-features"></a>
-- Add analytics for progress trends
-
-- Connect to Power BI dashboards
-
-- Include more workout types and user goals
 
 ## 🤝 Contributing <a name="contributing"></a>
 Contributions are welcome. Fork the repo, create a branch, and submit a pull request.
 
+---
+
 ## ⭐️ Show your support <a name="support"></a>
 If you like this project, give it a ⭐️ on GitHub!
 
-## 🙏 Acknowledgements <a name="acknowledgements"></a>
-Supabase – PostgreSQL hosting and testing
+---
 
-Posit – RStudio Cloud environment
+## 🙏 Acknowledgements <a name="acknowledgements"></a>
+- [Supabase](https://supabase.com/) – PostgreSQL hosting and testing  
+- [Posit](https://posit.cloud/) – RStudio Cloud environment  
+
+---
 
 ## ❓ FAQ <a name="faq"></a>
-How do I run this project in Posit?
+**1. How do I run this project in Posit?**  
 Open the repository in Posit, install dependencies, and run the R scripts step by step.
 
-**What dependencies are needed?**
-
+**2. What dependencies are needed?**  
 ```r
-Copy code
 install.packages(c("DBI", "RPostgres", "dplyr", "ggplot2"))
-```
-** Can I use MySQL or other databases? **
-❌ No. Only Supabase (PostgreSQL) is supported.
-
-How do I connect Posit to Supabase?
-Use connect_db.R with your Supabase credentials from Project Settings → Database → Connection Info.
-
-## 📝 License <a name="license"></a>
-This project is licensed under the MIT License
